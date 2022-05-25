@@ -8,6 +8,7 @@ using UnityEngine;
 /// </summary>
 public class RTSPlayer : NetworkBehaviour
 {
+    [SerializeField] private Building[] buildings = new Building[0]; //建築種類數組
     private List<Unit> myUnits = new List<Unit>(); //玩家擁有單位
     private List<Building> myBuildings = new List<Building>();//玩家建築
 
@@ -70,6 +71,26 @@ public class RTSPlayer : NetworkBehaviour
         if (building.connectionToClient.connectionId != connectionToClient.connectionId) return;
         myBuildings.Remove(building);
 
+    }
+
+    //放置建築
+    [Command]
+    internal void CmdTryPlaceBuilding(int buildingId, Vector3 point)
+    {
+        Building buildingToPlace = null;
+        foreach (Building building in buildings)
+        {
+            //找到要求建造的建築
+            if (building.GetId() == buildingId)
+            {
+                buildingToPlace = building;
+                break;
+            }
+        }
+        if (buildingToPlace == null) return;
+
+        GameObject buildingInatance = Instantiate(buildingToPlace.gameObject, point, buildingToPlace.transform.rotation);
+        NetworkServer.Spawn(buildingInatance, connectionToClient);
     }
 
 

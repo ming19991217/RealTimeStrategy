@@ -12,7 +12,7 @@ public class GameOverHandler : NetworkBehaviour
     public static event Action ServerOnGameOver;
     public static event Action<string> ClientOnGameOver;//客戶端調用遊戲結束事件
 
-    private List<UnitBase> bases = new List<UnitBase>();
+    private List<UnitBase> bases = new List<UnitBase>(); //玩家基地列表
 
     #region  Server
 
@@ -37,6 +37,8 @@ public class GameOverHandler : NetworkBehaviour
     {
         bases.Add(unitBase);
     }
+
+    //單位基地被摧毀時調用
     [Server]
     private void ServerHandleBaseDespawned(UnitBase unitBase)
     {

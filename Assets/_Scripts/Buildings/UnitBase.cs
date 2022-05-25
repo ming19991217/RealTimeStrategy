@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
-
+/// <summary>
+/// 單位基地 當玩家所有基地摧毀 遊戲結束 
+/// </summary>
 public class UnitBase : NetworkBehaviour
 {
     [SerializeField] private Health health = null;
