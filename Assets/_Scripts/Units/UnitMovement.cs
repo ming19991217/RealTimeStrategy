@@ -59,6 +59,12 @@ public class UnitMovement : NetworkBehaviour
     [Command] //客戶端呼叫伺服器去執行一個方法
     public void CmdMove(Vector3 position)
     {
+        ServerMove(position);
+    }
+
+    [Server] //給伺服器直接調用的移動方法
+    public void ServerMove(Vector3 position)
+    {
         targeter.ClearTarget();
 
         if (!NavMesh.SamplePosition(position, out NavMeshHit hit, 1f, NavMesh.AllAreas)) return;

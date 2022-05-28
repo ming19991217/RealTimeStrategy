@@ -20,7 +20,7 @@ public class BuildingButton : MonoBehaviour, IPointerDownHandler, IPointerUpHand
     private RTSPlayer player;
     private GameObject buildingPreviewInstance; //建築預製件
     private Renderer buildingRendererInstance;//建築renderer組件 預覽用
-
+    private BoxCollider buildingCollider;
 
 
     private void Start()
@@ -29,6 +29,7 @@ public class BuildingButton : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 
         iconImage.sprite = building.GetIcon();
         priceText.text = building.GetPrice().ToString();
+        buildingCollider = building.GetComponent<BoxCollider>();
     }
 
     private void Update()
@@ -48,6 +49,10 @@ public class BuildingButton : MonoBehaviour, IPointerDownHandler, IPointerUpHand
     {
         //是左鍵
         if (eventData.button != PointerEventData.InputButton.Left) return;
+
+        //有錢才能拖拽
+        if (player.GetResources() < building.GetPrice()) return;
+
         //生成建築實例
         buildingPreviewInstance = Instantiate(building.GetBuildingPreview());
         buildingRendererInstance = buildingPreviewInstance.GetComponentInChildren<Renderer>();
@@ -85,6 +90,8 @@ public class BuildingButton : MonoBehaviour, IPointerDownHandler, IPointerUpHand
         {
             buildingPreviewInstance.SetActive(true);
         }
+        Color color = player.CanPlaceBuilding(buildingCollider, hit.point) ? Color.green : Color.red;
+        buildingRendererInstance.material.SetColor("_BaseColor", color);
     }
 
 

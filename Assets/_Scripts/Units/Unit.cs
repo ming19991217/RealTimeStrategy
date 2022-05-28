@@ -7,6 +7,7 @@ using UnityEngine.Events;
 
 public class Unit : NetworkBehaviour
 {
+    [SerializeField] private int resourceCost = 10;
     [SerializeField] private Health health = null;
     [SerializeField] private UnitMovement unitMovement = null;
     [SerializeField] private Targeter targeter = null;
@@ -23,10 +24,10 @@ public class Unit : NetworkBehaviour
     public static event Action<Unit> AuthorityOnUnitSpawned; //當單位誕生 客戶端
     public static event Action<Unit> AuthorityOnUnitDespawned; //當單位消失 客戶端
 
-
     //當選擇單位後 需要到unitmovement進行調用
     public UnitMovement GetUnitMovement() { return unitMovement; }
     public Targeter GetTargeter() { return targeter; }
+    public int GetResourceCost() { return resourceCost; }
 
 
     #region Server
