@@ -20,6 +20,7 @@ public class UnitSelectionHandler : MonoBehaviour
     private void Start()
     {
         mainCamera = Camera.main;
+        player = NetworkClient.connection.identity.GetComponent<RTSPlayer>();
 
         Unit.AuthorityOnUnitDespawned += AuthorityHandleUnitDespawned; //單位死亡後 移除選擇列表
 
@@ -33,8 +34,6 @@ public class UnitSelectionHandler : MonoBehaviour
 
     private void Update()
     {
-        //因為開始時 player還沒創建 所以在update調用
-        if (player == null) { player = NetworkClient.connection.identity.GetComponent<RTSPlayer>(); }
 
         //按下左鍵 清空選擇
         if (Mouse.current.leftButton.wasPressedThisFrame)

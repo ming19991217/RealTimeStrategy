@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 3554614077015912687}
   - component: {fileID: 3554614077015912686}
   - component: {fileID: 3554614077015912685}
-  - component: {fileID: 3554614077015912684}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -50,7 +49,7 @@ MonoBehaviour:
   autoStartServerBuild: 1
   serverTickRate: 30
   offlineScene: Assets/Scenes/Scene_Menu.unity
-  onlineScene: Assets/Scenes/Scene_Map_01.unity
+  onlineScene: 
   transport: {fileID: 3554614077015912685}
   networkAddress: localhost
   maxConnections: 100
@@ -59,13 +58,13 @@ MonoBehaviour:
   autoCreatePlayer: 1
   playerSpawnMethod: 1
   spawnPrefabs:
-  - {fileID: 1716766184843422454, guid: 5ecf2359a658a56479de122d28632a9e, type: 3}
   - {fileID: 1116922683864761090, guid: 849a3726b27bb354180e3a1ab7c3ca7e, type: 3}
-  - {fileID: 3111440844754873080, guid: 0e216ce239936f54ab926f9d38658ae6, type: 3}
   - {fileID: 1201747158956853750, guid: 56e48508c5938a141803b6167642b51d, type: 3}
-  - {fileID: 1116922683864761090, guid: 6c35ecb8b1f48a148b1170885efd08ff, type: 3}
   - {fileID: 1116922683864761090, guid: 75bf7d30fd461384381170996a34e4e0, type: 3}
-  unitSpawnerPrefab: {fileID: 1116922683864761090, guid: 849a3726b27bb354180e3a1ab7c3ca7e, type: 3}
+  - {fileID: 4176109015345448250, guid: 4e01c76378f503146b07385c1faf86d8, type: 3}
+  - {fileID: 6513148774935517844, guid: a90690df489f2524c9fb5b61a4de32d2, type: 3}
+  - {fileID: 4902240161706896900, guid: d920d90e588b2434cb382eb44eec4ba0, type: 3}
+  unitBasePrefab: {fileID: 1116922683864761090, guid: 849a3726b27bb354180e3a1ab7c3ca7e, type: 3}
   gameOverHandlerPrefab: {fileID: 6342658780570917242, guid: 56e48508c5938a141803b6167642b51d, type: 3}
 --- !u!114 &3554614077015912685
 MonoBehaviour:
@@ -96,17 +95,3 @@ MonoBehaviour:
   debugLog: 0
   statisticsGUI: 0
   statisticsLog: 0
---- !u!114 &3554614077015912684
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3554614077015912690}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  offsetX: 0
-  offsetY: 0

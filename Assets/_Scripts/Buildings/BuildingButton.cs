@@ -29,15 +29,13 @@ public class BuildingButton : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 
         iconImage.sprite = building.GetIcon();
         priceText.text = building.GetPrice().ToString();
+        player = NetworkClient.connection.identity.GetComponent<RTSPlayer>();
         buildingCollider = building.GetComponent<BoxCollider>();
     }
 
     private void Update()
     {
-        if (player == null) //獲得play組件
-        {
-            player = NetworkClient.connection.identity.GetComponent<RTSPlayer>();
-        }
+
 
         //如果已經生成建築預製件
         if (buildingPreviewInstance == null) return;
@@ -91,7 +89,10 @@ public class BuildingButton : MonoBehaviour, IPointerDownHandler, IPointerUpHand
             buildingPreviewInstance.SetActive(true);
         }
         Color color = player.CanPlaceBuilding(buildingCollider, hit.point) ? Color.green : Color.red;
-        buildingRendererInstance.material.SetColor("_BaseColor", color);
+        foreach (var material in buildingRendererInstance.materials)
+        {
+            material.SetColor("_BaseColor", color);
+        }
     }
 
 

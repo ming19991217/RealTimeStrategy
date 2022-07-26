@@ -8,23 +8,39 @@ using UnityEngine;
 /// </summary>
 public class RTSPlayer : NetworkBehaviour
 {
+    [SerializeField] private Transform cameraTransform = null;
     [SerializeField] private LayerMask buildingBlockLayer = new LayerMask();//放置建築檢測圖層
     [SerializeField] private Building[] buildings = new Building[0]; //建築種類數組
     [SerializeField] private float buildingRangeLimit = 5f;
 
-    //
+
+    //遊戲派對擁有者
+    [SyncVar(hook = nameof(AuthorityHandlePartyOwnerStateUpdated))]
+    private bool isPartyOwner = false;
+    [SyncVar(hook = nameof(ClientHandleDisplayNameUpdated))]
+    public string displayName;
     [SyncVar(hook = nameof(ClientHandleResourcesUpdated))] //改變資源數值時調用
     private int resources = 500;//資源數
+
+
+    public static event Action ClientOnInfoUpdated;
+    public static event Action<bool> AuthorityOnPartyOwnerStateUpdated;
     public event Action<int> ClientOnResourcesUpdated; //資源數值更變時調用
+
+
+    public string GetDisplayName() { return displayName; }
+    public bool GetIsPartyOwner() { return isPartyOwner; }
     public int GetResources() { return resources; }
+    public Transform GetCameraTransform() { return cameraTransform; }
 
 
-    //
     private List<Unit> myUnits = new List<Unit>(); //玩家擁有單位
     private List<Building> myBuildings = new List<Building>();//玩家建築
 
     public List<Unit> GetMyUnits() { return myUnits; }
     public List<Building> GetMyBuildings() { return myBuildings; }
+
+
     //
     //判斷是否可以放置建築
     public bool CanPlaceBuilding(BoxCollider buildingCollider, Vector3 point)
@@ -56,6 +72,8 @@ public class RTSPlayer : NetworkBehaviour
     private Color teamColor = new Color();
     public Color GetTeamColor() { return teamColor; }
 
+
+
     #region  Server
     //玩家開始時 
     public override void OnStartServer()
@@ -67,6 +85,7 @@ public class RTSPlayer : NetworkBehaviour
         Building.ServerOnBuildingSpawned += ServerHandleBuildingSpawned;
         Building.ServerOnBuildingDespawned += ServerHandleBuildingDespawned;
 
+        DontDestroyOnLoad(gameObject);
     }
 
     //玩家離開時 調用
@@ -79,6 +98,18 @@ public class RTSPlayer : NetworkBehaviour
         Building.ServerOnBuildingDespawned -= ServerHandleBuildingDespawned;
 
     }
+
+    [Server]
+    public void SetPartyOwner(bool state)
+    {
+        isPartyOwner = state;
+    }
+    [Server]
+    public void SetDisplayName(string displayName)
+    {
+        this.displayName = displayName;
+    }
+
 
     [Server] //設置資源數
     public void SetResources(int newResources) { resources = newResources; }
@@ -118,6 +149,14 @@ public class RTSPlayer : NetworkBehaviour
         if (building.connectionToClient.connectionId != connectionToClient.connectionId) return;
         myBuildings.Add(building);
 
+    }
+
+    [Command] //開始遊戲
+    public void CmdStartGame()
+    {
+        if (!isPartyOwner) return;
+
+        ((RTSNetworkManager)NetworkManager.singleton).StartGame();
     }
 
     //放置建築
@@ -171,9 +210,24 @@ public class RTSPlayer : NetworkBehaviour
         Building.AuthorityOnBuildingDespawned += AuthorityHandleBuildingDespawned;
     }
 
+    public override void OnStartClient()
+    {
+        if (NetworkServer.active) return;
+
+        DontDestroyOnLoad(gameObject);
+
+        ((RTSNetworkManager)NetworkManager.singleton).Players.Add(this);
+    }
+
     public override void OnStopClient()
     {
-        if (!isClientOnly || !hasAuthority) return;
+        ClientOnInfoUpdated?.Invoke();
+
+        if (!isClientOnly) return;
+        //伺服器執行
+        ((RTSNetworkManager)NetworkManager.singleton).Players.Remove(this);
+
+        if (!hasAuthority) return;
 
         // 取消訂閱單位生成事件
         Unit.AuthorityOnUnitSpawned -= AuthorityHandleUnitSpawned;
@@ -188,6 +242,17 @@ public class RTSPlayer : NetworkBehaviour
     private void ClientHandleResourcesUpdated(int oldResources, int newResources)
     {
         ClientOnResourcesUpdated?.Invoke(newResources);
+    }
+
+    private void AuthorityHandlePartyOwnerStateUpdated(bool oldState, bool newState)
+    {
+        if (!hasAuthority) { return; }
+
+        AuthorityOnPartyOwnerStateUpdated?.Invoke(newState);
+    }
+    private void ClientHandleDisplayNameUpdated(string oldDisplayName, string newDisplayName)
+    {
+        ClientOnInfoUpdated?.Invoke();
     }
 
 
